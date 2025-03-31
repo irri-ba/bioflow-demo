@@ -1128,7 +1128,7 @@ if (is.null(result)){
           pred.mta.biplot <- do.call(cbind,level3[names(N)[which(N == N[1])]])
           rownames(pred.mta.biplot) <- rownames(level2[[ which(N == N[1])[1] ]][[1]] )
           for(i in 1:ncol(pred.mta.biplot)){
-              rownames(pred.mta.biplot) <- gsub(paste0(colnames(pred.mta.biplot)[i],":"),"",rownames(pred.mta.biplot))
+            rownames(pred.mta.biplot) <- gsub(paste0(colnames(pred.mta.biplot)[i],":"),"",rownames(pred.mta.biplot))
           }
           colnames(pred.mta.biplot) <- substring(colnames(pred.mta.biplot),4,nchar(colnames(pred.mta.biplot)))
           pred.mta.biplot <- pred.mta.biplot[,apply(pred.mta.biplot,2,sommer::propMissing) == 0]
@@ -1194,7 +1194,7 @@ if (is.null(result)){
           pred.mta.biplot <- do.call(cbind,level3[names(N)[which(N == N[1])]])
           rownames(pred.mta.biplot) <- rownames(level2[[ which(N == N[1])[1] ]][[1]] )
           for(i in 1:ncol(pred.mta.biplot)){
-              rownames(pred.mta.biplot) <- gsub(paste0(colnames(pred.mta.biplot)[i],":"),"",rownames(pred.mta.biplot))
+            rownames(pred.mta.biplot) <- gsub(paste0(colnames(pred.mta.biplot)[i],":"),"",rownames(pred.mta.biplot))
           }
           colnames(pred.mta.biplot) <- substring(colnames(pred.mta.biplot),4,nchar(colnames(pred.mta.biplot)))
           pred.mta.biplot <- pred.mta.biplot[,apply(pred.mta.biplot,2,sommer::propMissing) == 0]
@@ -1692,25 +1692,24 @@ if (is.null(result)){
   if("params" %in% ls()){ # we will download the document
     shinyjs::hide()
   }else{ # input <- list(corrplotTraitMtaPredsType=effectTypes[1],corrplotTraitMtaPredsEnv=envirTypes[1])
-    
-    inputPanel(
-      # selectInput(ns("corrplotTraitMtaPredsType"),
-      #             label = "Effect type",
-      #             choices = setdiff(effectTypes,c("(Intercept")), multiple = FALSE,
-      # ),
-      # column(width=12),
-      # selectInput(ns("corrplotTraitMtaPredsEnv"),
-      #             label = "Environment", 
-      #             choices = envirTypes
-      # ),
-      shiny::checkboxInput(ns("freqCor"),
-                           label = "Show frequency distribution",
-                           value = TRUE
+    if(length(traits) > 1){
+      inputPanel(
+        # selectInput(ns("corrplotTraitMtaPredsType"),
+        #             label = "Effect type",
+        #             choices = setdiff(effectTypes,c("(Intercept")), multiple = FALSE,
+        # ),
+        # column(width=12),
+        # selectInput(ns("corrplotTraitMtaPredsEnv"),
+        #             label = "Environment", 
+        #             choices = envirTypes
+        # ),
+        shiny::checkboxInput(ns("freqCor"),
+                             label = "Show frequency distribution",
+                             value = TRUE
+        )
       )
-    )
-    
+    }
   }
-  
 }
 
 ```
@@ -1722,103 +1721,32 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  # if(nrow(corr) > 1){
-  if("params" %in% ls()){ # we will download the document
-    
-    cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
-    
-    # for(iType5 in setdiff(effectTypes, c("(Intercept)"))){
-    #   cat("\n\n####", iType5, "{.tabset .tabset-pills}       \n\n")
-    
-    #       if(iType5 %in% c("environment", "designation")){
-    #     envirTypes3 <- c("(Intercept)")
-    # } else{
-    #     envirTypes3 <- setdiff(envirTypes,c("(Intercept)"))
-    #   }
-    
-    # for(iEnv5 in envirTypes3){
-    #   cat("\n\n#####", iEnv5, "{.tabset .tabset-pills}       \n\n")
-    
-    # wideCorTrait2 <- predSplitSplitWide2[[iType5]][[iEnv5]]
-    wideCorTrait2 <- predSplitSplitWide2[["designation"]][["(Intercept)"]]
-    if(!is.null(wideCorTrait2)){
+  if(length(traits) > 1){
+    # if(nrow(corr) > 1){
+    if("params" %in% ls()){ # we will download the document
       
-      if(is.matrix(wideCorTrait2)){
-        wideCorTrait2 <- apply(wideCorTrait2,2,sommer::imputev)
-        corrX <- round(stats::cor(wideCorTrait2, use="pairwise.complete.obs"),2)
-        mydata4CorTraits <- cgiarBase::matToTab(corrX)
-        p <- ggplot2::ggplot(data = mydata4CorTraits, ggplot2::aes(Var2, Var1, fill = Freq))+
-          ggplot2::geom_tile(color = "white")+
-          ggplot2::scale_fill_gradient2(low = "#E46726", high = "#038542", mid = "white",
-                                        midpoint = 0, limit = c(-1,1), space = "Lab",
-                                        name="Pearson\nCorrelation") +
-          ggplot2::theme_minimal()+
-          ggplot2::ylab("") + ggplot2::xlab("") +
-          ggplot2::coord_fixed()
-        # ggplot2::theme(strip.text.x = ggplot2::element_text(size=9, color="black"), 
-        #                axis.text.x = ggplot2::element_text(angle = 45, hjust=1, vjust = 1))
-        # if(nrow(corrX) < 8){ # if user wants to fill cell values
-        #   p <- p + ggplot2::geom_text(ggplot2::aes(label = round(Freq,2) ), color = "black", size = 4)
-        # }
-        
-        # Basic histogram
-        mydata4CorTraits$Group <- ifelse(mydata4CorTraits$Freq < 0, "Low", ifelse(mydata4CorTraits$Freq < 0.2, "Medium", "High"))
-        group.colors <- c(Low="#E46726",Medium="white", High="#038542")
-        p2 <- ggplot() + geom_histogram(data = mydata4CorTraits[which(mydata4CorTraits$Var1 != mydata4CorTraits$Var2),], 
-                                        aes(x = Freq, fill = ..x..), binwidth=0.1 ) + 
-          ggplot2::scale_x_continuous(limits = c(-1,1)) +
-          scale_fill_gradient2(low='#E46726', mid='white', high='#038542', midpoint=0, 
-                               limit = c(-1,1), space = "Lab", 
-                               name="Pearson\nCorrelation") + 
-          ggplot2::xlab("Correlation Value") + ggplot2::ylab("")
-        # plotly::ggplotly(p2)
-      }else{
-        p <- p2 <- ggplot2::ggplot() + ggplot2::ggtitle("Combination not available")
-      } # end of nrow > 1
+      cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
       
-    }else{
-      p <- p2 <- ggplot2::ggplot() + ggplot2::ggtitle("Combination not available")
-    }# end of each env
-    
-    for(iFreq in c("with frequency distribution", "without frequency distribution")){
-      cat("\n\n####", iFreq, "{.tabset .tabset-pills}       \n\n")
-      if(iFreq == "with frequency distribution"){
-        # combine plots
-        if(!is.null(wideCorTrait2) & is.matrix(wideCorTrait2)){
-          print(htmltools::tagList( plotly::subplot(plotly::ggplotly(p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank()) + geom_text(aes(label=Freq), size = 2)) , plotly::ggplotly(p2), nrows=1, shareY = FALSE, shareX = FALSE ) %>% layout(autosize = T, width = 1600)))
-        }else{
-          print(htmltools::tagList( plotly::subplot(plotly::ggplotly(p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank())) , plotly::ggplotly(p2), nrows=1, shareY = FALSE, shareX = FALSE ) ))
-        }
-        
-        
-      } else{
-        if(!is.null(wideCorTrait2) & is.matrix(wideCorTrait2)){
-          print(htmltools::tagList(plotly::ggplotly(p + geom_text(aes(label=Freq), size = 3)) %>% layout(xaxis = list(tickangle =-45),autosize = T, height = 800)))
-        }else{
-          print(htmltools::tagList(plotly::ggplotly(p)))
-        }
-        
-      }
+      # for(iType5 in setdiff(effectTypes, c("(Intercept)"))){
+      #   cat("\n\n####", iType5, "{.tabset .tabset-pills}       \n\n")
       
-    }
-    
-    # }
-    
-    # }
-    
-  }else{
-    
-    
-    plotly::renderPlotly({
-      # shiny::renderPlot({
-      # wideCorTrait2 <- predSplitSplitWide2[[input$corrplotTraitMtaPredsType]][[input$corrplotTraitMtaPredsEnv]]
+      #       if(iType5 %in% c("environment", "designation")){
+      #     envirTypes3 <- c("(Intercept)")
+      # } else{
+      #     envirTypes3 <- setdiff(envirTypes,c("(Intercept)"))
+      #   }
+      
+      # for(iEnv5 in envirTypes3){
+      #   cat("\n\n#####", iEnv5, "{.tabset .tabset-pills}       \n\n")
+      
+      # wideCorTrait2 <- predSplitSplitWide2[[iType5]][[iEnv5]]
       wideCorTrait2 <- predSplitSplitWide2[["designation"]][["(Intercept)"]]
       if(!is.null(wideCorTrait2)){
+        
         if(is.matrix(wideCorTrait2)){
           wideCorTrait2 <- apply(wideCorTrait2,2,sommer::imputev)
           corrX <- round(stats::cor(wideCorTrait2, use="pairwise.complete.obs"),2)
           mydata4CorTraits <- cgiarBase::matToTab(corrX)
-          
           p <- ggplot2::ggplot(data = mydata4CorTraits, ggplot2::aes(Var2, Var1, fill = Freq))+
             ggplot2::geom_tile(color = "white")+
             ggplot2::scale_fill_gradient2(low = "#E46726", high = "#038542", mid = "white",
@@ -1826,12 +1754,12 @@ if (is.null(result)){
                                           name="Pearson\nCorrelation") +
             ggplot2::theme_minimal()+
             ggplot2::ylab("") + ggplot2::xlab("") +
-            ggplot2::coord_fixed() + 
-            ggplot2::theme(strip.text.x = ggplot2::element_text(size=9, color="black"), 
-                           axis.text.x = ggplot2::element_text(angle = 45, hjust=1, vjust = 1))
-          if(nrow(corrX) < 8){ # if user wants to fill cell values
-            p <- p + ggplot2::geom_text(ggplot2::aes(label = round(Freq,2) ), color = "black", size = 4)
-          }
+            ggplot2::coord_fixed()
+          # ggplot2::theme(strip.text.x = ggplot2::element_text(size=9, color="black"), 
+          #                axis.text.x = ggplot2::element_text(angle = 45, hjust=1, vjust = 1))
+          # if(nrow(corrX) < 8){ # if user wants to fill cell values
+          #   p <- p + ggplot2::geom_text(ggplot2::aes(label = round(Freq,2) ), color = "black", size = 4)
+          # }
           
           # Basic histogram
           mydata4CorTraits$Group <- ifelse(mydata4CorTraits$Freq < 0, "Low", ifelse(mydata4CorTraits$Freq < 0.2, "Medium", "High"))
@@ -1843,39 +1771,111 @@ if (is.null(result)){
                                  limit = c(-1,1), space = "Lab", 
                                  name="Pearson\nCorrelation") + 
             ggplot2::xlab("Correlation Value") + ggplot2::ylab("")
+          # plotly::ggplotly(p2)
+        }else{
+          p <- p2 <- ggplot2::ggplot() + ggplot2::ggtitle("Combination not available")
+        } # end of nrow > 1
+        
+      }else{
+        p <- p2 <- ggplot2::ggplot() + ggplot2::ggtitle("Combination not available")
+      }# end of each env
+      
+      for(iFreq in c("with frequency distribution", "without frequency distribution")){
+        cat("\n\n####", iFreq, "{.tabset .tabset-pills}       \n\n")
+        if(iFreq == "with frequency distribution"){
+          # combine plots
+          if(!is.null(wideCorTrait2) & is.matrix(wideCorTrait2)){
+            print(htmltools::tagList( plotly::subplot(plotly::ggplotly(p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank()) + geom_text(aes(label=Freq), size = 2)) , plotly::ggplotly(p2), nrows=1, shareY = FALSE, shareX = FALSE ) %>% layout(autosize = T, width = 1600)))
+          }else{
+            print(htmltools::tagList( plotly::subplot(plotly::ggplotly(p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank())) , plotly::ggplotly(p2), nrows=1, shareY = FALSE, shareX = FALSE ) ))
+          }
+        } else{
+          if(!is.null(wideCorTrait2) & is.matrix(wideCorTrait2)){
+            print(htmltools::tagList(plotly::ggplotly(p + geom_text(aes(label=Freq), size = 3)) %>% layout(xaxis = list(tickangle =-45),autosize = T, height = 800)))
+          }else{
+            print(htmltools::tagList(plotly::ggplotly(p)))
+          }
+        }
+      }
+      
+      # }
+      
+      # }
+      
+    }else{
+      
+      
+      plotly::renderPlotly({
+        # shiny::renderPlot({
+        # wideCorTrait2 <- predSplitSplitWide2[[input$corrplotTraitMtaPredsType]][[input$corrplotTraitMtaPredsEnv]]
+        wideCorTrait2 <- predSplitSplitWide2[["designation"]][["(Intercept)"]]
+        if(!is.null(wideCorTrait2)){
+          if(is.matrix(wideCorTrait2)){
+            wideCorTrait2 <- apply(wideCorTrait2,2,sommer::imputev)
+            corrX <- round(stats::cor(wideCorTrait2, use="pairwise.complete.obs"),2)
+            mydata4CorTraits <- cgiarBase::matToTab(corrX)
+            
+            p <- ggplot2::ggplot(data = mydata4CorTraits, ggplot2::aes(Var2, Var1, fill = Freq))+
+              ggplot2::geom_tile(color = "white")+
+              ggplot2::scale_fill_gradient2(low = "#E46726", high = "#038542", mid = "white",
+                                            midpoint = 0, limit = c(-1,1), space = "Lab",
+                                            name="Pearson\nCorrelation") +
+              ggplot2::theme_minimal()+
+              ggplot2::ylab("") + ggplot2::xlab("") +
+              ggplot2::coord_fixed() + 
+              ggplot2::theme(strip.text.x = ggplot2::element_text(size=9, color="black"), 
+                             axis.text.x = ggplot2::element_text(angle = 45, hjust=1, vjust = 1))
+            # if(nrow(corrX) < 8){ # if user wants to fill cell values
+            #   p <- p + ggplot2::geom_text(ggplot2::aes(label = round(Freq,2) ), color = "black", size = 4)
+            # }
+            
+            # Basic histogram
+            mydata4CorTraits$Group <- ifelse(mydata4CorTraits$Freq < 0, "Low", ifelse(mydata4CorTraits$Freq < 0.2, "Medium", "High"))
+            group.colors <- c(Low="#E46726",Medium="white", High="#038542")
+            
+            p2 <- ggplot() + geom_histogram(data = mydata4CorTraits[which(mydata4CorTraits$Var1 != mydata4CorTraits$Var2),], 
+                                            aes(x = Freq, fill = ..x..), binwidth=0.1 ) + 
+              ggplot2::scale_x_continuous(limits = c(-1,1)) +
+              scale_fill_gradient2(low='#E46726', mid='white', high='#038542', midpoint=0, 
+                                   limit = c(-1,1), space = "Lab", 
+                                   name="Pearson\nCorrelation") + 
+              ggplot2::xlab("Correlation Value") + ggplot2::ylab("")
+          }else{
+            p <- p2 <- ggplot2::ggplot() + ggplot2::ggtitle("Combination not available")
+          }
         }else{
           p <- p2 <- ggplot2::ggplot() + ggplot2::ggtitle("Combination not available")
         }
-      }else{
-        p <- p2 <- ggplot2::ggplot() + ggplot2::ggtitle("Combination not available")
-      }
-      # combine plots
-      if(input$freqCor == TRUE){
         # combine plots
-        if(!is.null(wideCorTrait2) & is.matrix(wideCorTrait2)){
-          ply1 <- plotly::ggplotly(p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank()) + geom_text(aes(label=Freq), size = 3)) 
-          ply2 <- plotly::ggplotly(p2)
-          plotly::subplot(ply1, ply2, nrows=1, shareY = FALSE, shareX = FALSE ) %>% layout(autosize = T, width = 1600)
+        if(input$freqCor == TRUE){
+          # combine plots
+          if(!is.null(wideCorTrait2) & is.matrix(wideCorTrait2)){
+            ply1 <- plotly::ggplotly(p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank()) + geom_text(aes(label=Freq), size = 3)) 
+            ply2 <- plotly::ggplotly(p2)
+            plotly::subplot(ply1, ply2, nrows=1, shareY = FALSE, shareX = FALSE ) %>% layout(autosize = T, width = 1600)
+          } else{
+            ply1 <- plotly::ggplotly(p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank())) 
+            ply2 <- plotly::ggplotly(p2)
+            plotly::subplot(ply1, ply2, nrows=1, shareY = FALSE, shareX = FALSE )
+          }
+          
         } else{
-          ply1 <- plotly::ggplotly(p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank())) 
-          ply2 <- plotly::ggplotly(p2)
-          plotly::subplot(ply1, ply2, nrows=1, shareY = FALSE, shareX = FALSE )
+          if(!is.null(wideCorTrait2) & is.matrix(wideCorTrait2)){
+            plotly::ggplotly(p  + geom_text(aes(label=Freq))) %>% layout(xaxis = list(tickangle =-45),autosize = T, height = 800)
+          } else{
+            plotly::ggplotly(p)
+          }
+          
         }
-        
-      } else{
-        if(!is.null(wideCorTrait2) & is.matrix(wideCorTrait2)){
-          plotly::ggplotly(p  + geom_text(aes(label=Freq))) %>% layout(xaxis = list(tickangle =-45),autosize = T, height = 800)
-        } else{
-          plotly::ggplotly(p)
-        }
-        
-      }
-      # ply1 <- plotly::ggplotly(p)
-      # ply2 <- plotly::ggplotly(p2)
-      # plotly::subplot(ply1, ply2, nrows=1, shareY = TRUE, shareX = TRUE)
-      # print(p)
-    })
-    
+        # ply1 <- plotly::ggplotly(p)
+        # ply2 <- plotly::ggplotly(p2)
+        # plotly::subplot(ply1, ply2, nrows=1, shareY = TRUE, shareX = TRUE)
+        # print(p)
+      })
+      
+    }
+  } else{
+    cat("Only 1 trait selected. Skipping correlation between traits.")
   }
   
 }

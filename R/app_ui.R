@@ -123,8 +123,9 @@ app_ui <- function(request) {
                           navlistPanel("Engines:", widths = c(1, 11),
                                        tabPanel(div("LMMsolve" ), mod_mtaLMMsolveApp_ui("mtaLMMsolveApp_1") ), # biplot is part of the report in MET
                                        tabPanel(div("lme4", style = "color:red" )) , # biplot is part of the report in MET
-                                       tabPanel(div("sommer", style = "color:red" )) , # biplot is part of the report in MET
-                                       tabPanel(div("asreml"), mod_mtaASREMLApp_ui("mtaASREMLApp_1")),
+                                       tabPanel(div("sommer", style = "color:red" )) ,# biplot is part of the report in MET
+                                       tabPanel(div("asreml", style = "color:red" )) ,
+                                       # tabPanel(div("asreml"), mod_mtaASREMLApp_ui("mtaASREMLApp_1")),
                           )
                  ),
 
