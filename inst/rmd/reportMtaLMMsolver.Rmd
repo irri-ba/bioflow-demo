@@ -5,6 +5,7 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: html_document
 params:
   toDownload: FALSE
+  modelUsed: NULL
 ---
 
 ```{r setup, include=FALSE}
@@ -38,7 +39,8 @@ library(shiny)
 # for printing tables (data.frames) - DT::datatable()
 printTable <- function(DT, pageLength = 7, 
                        numericColNames = NULL, numRound = 3, 
-                       scrollXOpt = FALSE, colNames = NULL, autoWidthOpt = FALSE,...) {
+                       scrollXOpt = FALSE, colNames = NULL, autoWidthOpt = FALSE,
+                       fixedCol = 0, filt = "top",...) {
   oldnames <- colnames(DT)
   DT <- data.frame(lapply(X = DT, 
                           FUN = function(x) {
@@ -51,15 +53,17 @@ printTable <- function(DT, pageLength = 7,
   colnames(DT) <- oldnames
   table <- DT::datatable(data = DT, 
                          colnames = colNames,
-                         filter = "top", 
+                         filter = filt,
                          options = list(autoWidth = autoWidthOpt,
                                         dom = 'l<<t>pB>', 
                                         buttons = c('copy', 'csv', 'excel', 'print'),
                                         pageLength = pageLength,
                                         searchHighlight = TRUE,
                                         lengthMenu = c(7, 14, 21, 28, 35),
-                                        scrollX = scrollXOpt),
-                         extensions = 'Buttons',
+                                        scrollX = scrollXOpt,
+                                        fixedColumns = list(leftColumns = fixedCol)
+                                        ),
+                         extensions = c('Buttons', 'FixedColumns'),
                          rownames = FALSE,
                          ...)
   if (length(numericColNames) > 0){
@@ -175,9 +179,9 @@ The objective of this dashboard is to help scientist to understand the following
 
 7. Individual sensitivity and stability values across environments (output)
 
-<!-- 8. Percent check comparison against the different benchmark varieties present in the dataset (output) -->
+8. Percent check comparison against the different benchmark varieties present in the dataset (output)
 
-8. Genetic correlation between the traits (output)
+9. Genetic correlation between the traits (output)
 
 Understanding these data features should allow the scientist to identify which traits express more genotype by environment interactions and how they should be selected. It should also allow the scientist to assess the correlation between traits and how the product profile should be addressed to maximize genetic gains while developing the needed varieties at the same time. Materials with the highest performance and sensitivity to the environment could be potential nominations for advancement although we recommend to don't select new parents or products until the results from the multi-trial analysis are analyzed with a selection index.  
 
@@ -193,7 +197,7 @@ if (is.null(result)){
   metricsMta <- result$metrics[which(metrics$analysisId == idMta),]
   metricsMta <- metricsMta[, setdiff(colnames(metricsMta),c("module","analysisId"))]
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     printTable(metricsMta, autoWidthOpt = TRUE, scrollXOpt = FALSE,
                colNames = colnames(metricsMta),
                numericColNames = c("value","stdError"),
@@ -232,7 +236,7 @@ if (is.null(result)){
     
     if(length(c(latitude,longitude)) == 2){
       colnames(xx) <- cgiarBase::replaceValues(colnames(xx), Search = paste0("value_",c(latitude,longitude),"mean") , Replace = c("latitude","longitude"))
-      if("params" %in% ls()){ # we will download the document
+      if(params$toDownload == TRUE){ # we will download the document
         
         world <- ggplot2::map_data("world")
         p <- ggplot2::ggplot() + # + 
@@ -296,7 +300,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     shinyjs::hide()
   }else{ # input <- list(boxplotMtaPredsTrait="YLDTONHA",boxplotMtaPredsType="environment_designation")
     inputPanel(
@@ -331,7 +335,7 @@ if (is.null(result)){
     effectTypes_BEMD <- effectTypes[effectTypes %in% c("environment_designation", "designation")]
   }
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     
     cat(paste0("###  {.tabset .tabset-pills}    \n\n  "))
     for(iType in effectTypes_BEMD){
@@ -442,7 +446,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     shinyjs::hide()
   }else{ # input<-list(traitMtaConnect="YLDTONHA")
     inputPanel(shiny::selectInput(ns("traitMtaConnect"), 
@@ -472,7 +476,7 @@ if (is.null(result)){
   mydataSta <- result$predictions[which(result$predictions$analysisId %in% idSta),] # extract predictions
   # mydataSta[,"environment"] <- gsub("[[:punct:]]", "", mydataSta[,"environment"] )
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     
     cat(paste0("###  {.tabset .tabset-pills}    \n\n  "))
     
@@ -628,7 +632,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     shinyjs::hide()
   }else{ # input <- list(traitPredictionsCorrelation=traits[1],corrplotMtaPredsType=effectTypes[1])
     # if(length(setdiff(effectTypes, c("environment", "designation", "(Intercept)"))) > 0){
@@ -679,7 +683,7 @@ if (is.null(result)){
   
   # if(length(setdiff(effectTypes, c("environment", "designation", "(Intercept)"))) > 0){
   if(sum(stringr::str_detect(effectTypes, "_designation")) > 1){
-    if("params" %in% ls()){ # we will download the document
+    if(params$toDownload == TRUE){ # we will download the document
       
       cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
       
@@ -858,7 +862,7 @@ if (is.null(result)){
   } else if(sum(stringr::str_detect(effectTypes, "_designation")) == 1){
     if(effectTypes[which(stringr::str_detect(effectTypes, "_designation"))] == "environment_designation"){
       
-      if("params" %in% ls()){ # we will download the document
+      if(params$toDownload == TRUE){ # we will download the document
         
         cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
         
@@ -1065,7 +1069,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     shinyjs::hide()
   }else{
     if(sum(stringr::str_detect(effectTypes, "_designation")) > 1){
@@ -1103,7 +1107,7 @@ if (is.null(result)){
 } else {
   # if(length(setdiff(effectTypes, c("environment", "designation", "(Intercept)"))) > 0){
   if(sum(stringr::str_detect(effectTypes, "_designation")) > 1){
-    if("params" %in% ls()){ # we will download the document
+    if(params$toDownload == TRUE){ # we will download the document
       cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
       
       for(iTrait3 in traits){
@@ -1245,7 +1249,7 @@ if (is.null(result)){
   } else if(sum(stringr::str_detect(effectTypes, "_designation")) == 1){
     if(effectTypes[which(stringr::str_detect(effectTypes, "_designation"))] == "environment_designation"){
       
-      if("params" %in% ls()){ # we will download the document
+      if(params$toDownload == TRUE){ # we will download the document
         
         cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
         
@@ -1403,7 +1407,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     shinyjs::hide()
   }else{ # input <- list(scatterMtaPredsType=effectTypes[1], scatterMtaPredsTrait=traits[1], scatterMtaPredsEnvir=envirTypes[1])
     inputPanel(
@@ -1443,7 +1447,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     
     cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
     
@@ -1492,8 +1496,10 @@ if (is.null(result)){
               # plot 2
               temp.pred.box.top.list <- split(temp.pred.box.top, temp.pred.box.top$effectType)
               temp.pred.box.top.list <- lapply(temp.pred.box.top.list, function(x){
-                x.c <- x[which(grepl("check", tolower(x$entryType))),]
-                x <- x[which(!grepl("check", tolower(x$entryType))),]
+                x.c <- x[which(grepl("check|chck|bnchmark|benchmark|chek|chec",
+                                    x$entryType, ignore.case = TRUE)),]
+                x <- x[which(!grepl("check|chck|bnchmark|benchmark|chek|chec",
+                                    x$entryType, ignore.case = TRUE)),]
                 x <- x[with(x, order(-predictedValue)), ]
                 x <- x[1:min(c(nrow(x), 100)),]
                 x <- rbind(x, x.c)
@@ -1578,8 +1584,12 @@ if (is.null(result)){
             # plot 2
             temp.pred.box.top.list <- split(temp.pred.box.top, temp.pred.box.top$effectType)
             temp.pred.box.top.list <- lapply(temp.pred.box.top.list, function(x){
-              x.c <- x[which(grepl("check", tolower(x$entryType))),]
-              x <- x[which(!grepl("check", tolower(x$entryType))),]
+              # x.c <- x[which(grepl("check", tolower(x$entryType))),]
+              # x <- x[which(!grepl("check", tolower(x$entryType))),]
+              x.c <- x[which(grepl("check|chck|bnchmark|benchmark|chek|chec",
+                                  x$entryType, ignore.case = TRUE)),]
+              x <- x[which(!grepl("check|chck|bnchmark|benchmark|chek|chec",
+                                 x$entryType, ignore.case = TRUE)),]
               x <- x[with(x, order(-predictedValue)), ]
               x <- x[1:min(c(nrow(x), ifelse(!is.na(input$scatterMtaPredsTop), input$scatterMtaPredsTop,100))),]
               x <- rbind(x, x.c)
@@ -1653,6 +1663,38 @@ if (is.null(result)){
   )
   names(pred.mta.wide) <- gsub("predictedValue.","",colnames(pred.mta.wide)) 
   
+  # to show only 1 row per designation effectType (concatenated entryType)
+  pred.mta.wide1 <- pred.mta.wide[which(pred.mta.wide$effectType != "designation"),]
+  pred.mta.wide2 <- pred.mta.wide[which(pred.mta.wide$effectType == "designation"),]
+  
+  coalesce_by_column <- function(x) {
+    return(dplyr::coalesce(!!! as.list(x)))
+  }
+  
+  pred.mta.wide2_trait <- pred.mta.wide2 %>% select(c("designation", all_of(traits))) %>%
+    group_by(designation) %>% 
+    summarise(across(traits, coalesce_by_column)) 
+  
+  pred.mta.wide2_meta <- pred.mta.wide2 %>% select(!all_of(traits)) %>%
+    arrange(designation, entryType) %>% 
+    group_by(designation) %>% 
+    mutate(entryType2 = paste0(entryType, collapse = "#")) %>%
+    filter(duplicated(designation) == FALSE)
+  
+  pred.mta.wide2 <- merge(pred.mta.wide2_meta, pred.mta.wide2_trait, by = "designation")
+  pred.mta.wide2 <- subset(pred.mta.wide2, select = -c(entryType))
+  pred.mta.wide2 <- rename(pred.mta.wide2, entryType = entryType2)
+  
+  pred.mta.wide <- rbind(pred.mta.wide1, pred.mta.wide2)
+
+  # to deduct intercept from the envIndex_designation effectType to get slope for FW model
+  if(params$modelUsed == "fw_model"){
+    for (i in 1:length(unique(pred.mta$trait))){
+      pred.mta.wide[grepl("envIndex_designation",pred.mta.wide$effectType),unique(pred.mta$trait)[i]] <-
+        pred.mta.wide[grepl("envIndex_designation",pred.mta.wide$effectType),unique(pred.mta$trait)[i]] - pred.mta.wide[pred.mta.wide$effectType == "(Intercept)",unique(pred.mta$trait)[i]]
+    }
+  }
+    
   if(!is.null(result$data$qtl)  ){ # there's QTL information
     if(nrow(result$data$qtl)>0){
       qtls <- result$data$qtl
@@ -1661,7 +1703,7 @@ if (is.null(result)){
     }
   }
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     printTable(pred.mta.wide, autoWidthOpt = TRUE, scrollXOpt = FALSE,
                colNames = colnames(pred.mta.wide),
                numericColNames = traits,
@@ -1689,7 +1731,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     shinyjs::hide()
   }else{ # input <- list(corrplotTraitMtaPredsType=effectTypes[1],corrplotTraitMtaPredsEnv=envirTypes[1])
     if(length(traits) > 1){
@@ -1723,7 +1765,7 @@ if (is.null(result)){
   
   if(length(traits) > 1){
     # if(nrow(corr) > 1){
-    if("params" %in% ls()){ # we will download the document
+    if(params$toDownload == TRUE){ # we will download the document
       
       cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
       
@@ -1883,6 +1925,259 @@ if (is.null(result)){
 
 </div>
 
+`r if (length( grep("check|chck|bnchmark|benchmark|chek|chec", unique(pred[pred$analysisId == idMta,"entryType"]), ignore.case = TRUE) ) > 0) {"### Percent check comparison to top 30 entries\n
+The following plots allow the user to compare the top 30 entries against the different checks/benchmarks present in the dataset for each trait. The table below that shows the wide-table of all possible comparisons for all traits.\n"}`
+
+```{r }
+if (is.null(result)){
+  # invisible(NULL)
+} else {
+  result$status <- result$status#[1:6,]
+  idMta <- result$status[which(result$status$module == "mtaLmms"),"analysisId"]
+  idMta <- idMta[length(idMta)]
+  pred <- result$predictions
+  pred <- pred[pred$analysisId == idMta,]
+
+  traitChecks <- unique(pred$trait)
+
+  entryTypePresent <- table((unique(pred[which(pred$effectType == "designation"),c("designation","entryType")]))$entryType)
+  check1 <- which(entryTypePresent < 200)
+  check2 <- grep("check|chck|bnchmark|benchmark|chek|chec", names(entryTypePresent), ignore.case = TRUE, value=FALSE)
+  checksFound <- intersect(check1,check2)
+  if(length(checksFound) > 0){
+    labelChecks <- names(entryTypePresent)[checksFound]
+    nameOfChecks <- unique(pred[ which(pred$entryType %in% labelChecks & pred$effectType == "designation") , "designation"])
+
+    if(params$toDownload == TRUE){ # we will download the document
+      shinyjs::hide()
+    }else{
+      inputPanel(
+        selectInput(ns("checkMta"),
+                    label = "Check to compare to:",
+                    choices = nameOfChecks
+        ),
+        selectInput(ns("checkMtaTrait"),
+                    label = "View trait:",
+                    choices = traitChecks
+        ),
+      )
+    }
+  }else{
+    shinyjs::hide()
+  }
+
+}
+```
+
+<div style = "width:auto; height:auto; overflow:auto">
+
+```{r, results='asis', fig.height=20}
+if (is.null(result)){
+  # invisible(NULL)
+} else {
+
+  if(length(checksFound) > 0){
+
+    if(params$toDownload == TRUE){ # we will download the document
+
+      cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
+
+      for(iCheck in nameOfChecks){
+
+        cat("\n\n####", iCheck, "{.tabset .tabset-pills}       \n\n")
+
+        for(iTrait in traitChecks){
+
+          cat("\n\n#####", iTrait, "{.tabset .tabset-pills}       \n\n")
+
+          # predDta <- pred[which(pred$effectType == "designation"),]
+          # predDtaTrait <- predDta$trait
+          predListBench <- split(pred[which(pred$effectType == "designation"),], pred[which(pred$effectType == "designation"),]$trait)
+          predListBench2 <- lapply(predListBench, function(x){ # x <- predListBench[[1]]
+            checkSelected <- which(x$designation == iCheck)
+            if(length(checkSelected) > 0){
+              x$predictedValue2 <- ( (x$predictedValue / x$predictedValue[checkSelected]) - 1 ) * 100
+              x$UB <- ( ( (x$predictedValue+x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100
+              x$LB <- ( ( (x$predictedValue-x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100
+              x <- x[with(x, order(-predictedValue2)), ]
+              x_test <- x[which(!x$designation %in% nameOfChecks),]
+              x_test <- x_test[c(1:min(c(30, nrow(x_test)))),]
+              x <- x[c(which(x$designation %in% x_test$designation),which(x$designation %in% nameOfChecks)),]
+              x <- x[with(x, order(-predictedValue2)), ]
+              return(x)
+            }
+          })
+          temp.pred.box.bench <- do.call(rbind, predListBench2)
+          temp.pred.box.bench$entryTypeSimple <- LETTERS[as.numeric(as.factor(temp.pred.box.bench$entryType))]
+          temp.pred.box.bench <- temp.pred.box.bench[which(temp.pred.box.bench$trait == iTrait),]
+          if(nrow(temp.pred.box.bench)>0){
+            pb <- ggplot2::ggplot(
+            data = temp.pred.box.bench,
+            mapping = ggplot2::aes(
+              x = reorder(designation, -predictedValue2),
+              y = predictedValue2,
+              col = entryType,
+              text = paste(
+                paste0('<br>', "designation: ", designation),
+                paste0('<br>', "entry type: ", entryType),
+                paste0('<br>', "predicted value: ", round(predictedValue2, 4)),
+                # paste0('<br>', "standard error: ", round(stdError2, 4)),
+                paste0("<br>predVal +- stdError: (", round(LB, 2) , ", ",
+                       round(UB, 4), ")")))) +
+            ggplot2::theme_classic() +  ggplot2::geom_point() + #facet_grid(~trait, scales = "free_x")+
+            ggplot2::geom_errorbar(ggplot2::aes(ymax = UB,# predictedValue2 + stdError2,
+                                                ymin = LB#predictedValue2 - stdError2
+            ), position = ggplot2::position_dodge(0.5),
+            width = 0.10) +
+            ggplot2::labs(title = "Percentage over benchmark", x = "designation", y = "% over check entry", col = "Entry type") + ggplot2::geom_hline(yintercept=0, linetype='dotted', col = 'grey') +
+            ggplot2::theme(axis.text.x = ggplot2::element_blank(), legend.position = "bottom") + ggplot2::guides(fill=guide_legend(nrow=3,byrow=TRUE)) #+ ggplot2::facet_wrap(~trait, scales = "free", ncol=2)
+             
+            print(htmltools::tagList(plotly::ggplotly(pb)))
+            
+            # tablepb <- temp.pred.box.bench[which(temp.pred.box.bench$predictedValue2 > 0),]
+            # 
+            # printTable(tablepb, autoWidthOpt = TRUE, scrollXOpt = FALSE,
+            #            colNames = colnames(tablepb),
+            #            numericColNames = c("predictedValue", "stdError", "reliability", 
+            #                                "predictedValue2", "UB", "LB"),
+            #            numRound = 4)
+            # 
+            # # cowplot::plot_grid(pb, tableGrob(tablepb), ncol = 1, rel_widths = c(1,2))
+            # 
+            # print(htmltools::tagList(plotly::ggplotly(pb), 
+            #                          printTable(tablepb, autoWidthOpt = TRUE, scrollXOpt = FALSE,
+            #                                     colNames = colnames(tablepb),
+            #                                     numericColNames = c("predictedValue", "stdError",
+            #                                                         "reliability", 
+            #                                                         "predictedValue2", "UB", "LB"),
+            #                                     numRound = 4)))
+        
+          }else{
+            print(htmltools::tagList(plotly::ggplotly(ggplot2::ggplot() + ggplot2::ggtitle("Combination not available"))))
+          }
+        }
+
+      }
+
+    }else{
+
+      plotly::renderPlotly({
+        predListBench <- split(pred[which(pred$effectType == "designation"),], pred[which(pred$effectType == "designation"),]$trait)
+        predListBench2 <- lapply(predListBench, function(x){ # x <- predListBench[[1]]
+          checkSelected <- which(x$designation == input$checkMta)
+          # checkSelected <- which(x$designation == "IRRI 156")
+          if(length(checkSelected) > 0){
+            x$predictedValue2 <- ( (x$predictedValue / x$predictedValue[checkSelected]) - 1 ) * 100
+            x$UB <- ( ( (x$predictedValue+x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100
+            x$LB <- ( ( (x$predictedValue-x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100
+            x <- x[with(x, order(-predictedValue2)), ]
+            x_test <- x[which(!x$designation %in% nameOfChecks),]
+            x_test <- x_test[c(1:min(c(30, nrow(x_test)))),]
+            x <- x[c(which(x$designation %in% x_test$designation),which(x$designation %in% nameOfChecks)),]
+            # x <- x[unique(c(1:min(c(30, nrow(x))),which(x$designation == input$checkMta))),]
+            return(x)
+          }
+        })
+        temp.pred.box.bench <- do.call(rbind, predListBench2)
+        temp.pred.box.bench$entryTypeSimple <- LETTERS[as.numeric(as.factor(temp.pred.box.bench$entryType))]
+        temp.pred.box.bench <- temp.pred.box.bench[which(temp.pred.box.bench$trait == input$checkMtaTrait),]
+        if(nrow(temp.pred.box.bench)>0){
+          pb <- ggplot2::ggplot(
+            data = temp.pred.box.bench,
+            mapping = ggplot2::aes(
+              x = reorder(designation, -predictedValue2),
+              y = predictedValue2,
+              col = entryType,
+              text = paste(
+                paste0('<br>', "designation: ", designation),
+                paste0('<br>', "entry type: ", entryType),
+                paste0('<br>', "predicted value: ", round(predictedValue2, 4)),
+                # paste0('<br>', "standard error: ", round(stdError2, 4)),
+                paste0("<br>predVal +- stdError: (", round(LB, 2) , ", ",
+                       round(UB, 4), ")")))) +
+            ggplot2::theme_classic() +  ggplot2::geom_point() + #facet_grid(~trait, scales = "free_x")+
+            ggplot2::geom_errorbar(ggplot2::aes(ymax = UB,# predictedValue2 + stdError2,
+                                                ymin = LB#predictedValue2 - stdError2
+            ), position = ggplot2::position_dodge(0.5),
+            width = 0.10) +
+            ggplot2::labs(title = "Percentage over benchmark", x = "designation", y = "% over check entry", col = "Entry type") + ggplot2::geom_hline(yintercept=0, linetype='dotted', col = 'grey') +
+            ggplot2::theme(axis.text.x = ggplot2::element_blank(), legend.position = "bottom") + ggplot2::guides(fill=guide_legend(nrow=3,byrow=TRUE)) # + ggplot2::facet_wrap(~trait, scales = "free", ncol=2)
+          plotly::ggplotly(pb)
+        } else{
+          plotly::ggplotly(ggplot2::ggplot() + ggplot2::ggtitle("Combination not available"))
+        }
+      })
+
+    }
+
+  }
+
+}
+```
+</div>
+
+```{r, results='asis', fig.height=20}
+if (is.null(result)){
+  # invisible(NULL)
+} else {
+  
+  if(length(checksFound) > 0){
+    
+    predListBenchForTable <- split(pred[which(pred$effectType == "designation"),], pred[which(pred$effectType == "designation"),]$trait)# make a list by trait
+    
+    for(iTrait in 1:length(predListBenchForTable)){
+      x <- predListBenchForTable[[iTrait]]
+      byCheck <- list()
+      for(iCheck in nameOfChecks){ # iCheck = nameOfChecks[1]
+        checkSelected <- which(x$designation == iCheck)
+        if(length(checkSelected) > 0){
+          x$predictedValue2 <- ( (x$predictedValue / x$predictedValue[checkSelected]) - 1 ) * 100
+          x$UB <- ( ( (x$predictedValue+x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100
+          x$LB <- ( ( (x$predictedValue-x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100
+          x <- x[with(x, order(designation)), ]
+          # x <- x[unique(c(1:min(c(30, nrow(x))),which(x$designation == iCheck ))),]
+          x$benchmark <- iCheck
+          byCheck[[iCheck]] <- x
+        }
+      }
+      long <- do.call(rbind, byCheck)
+      wideBench <- reshape(long[, c("benchmark", "designation","predictedValue2")], direction = "wide", idvar = "designation",
+                           timevar = c("benchmark"), v.names = c("predictedValue2"), sep= "_")
+      colnames(wideBench) <- paste0(names(predListBenchForTable)[iTrait], gsub("predictedValue2","",colnames(wideBench)))
+      colnames(wideBench)[1] <- "designation"
+      if(iTrait == 1){
+        resBench <- wideBench
+      }else{
+        resBench <- merge(resBench, wideBench, by="designation")
+      }
+    }
+    numCols <- colnames(resBench)[-c(1)]
+    
+    if(params$toDownload == TRUE){ # we will download the document
+      printTable(resBench, colNames = colnames(resBench), fixedCol = 1, filt = "none")
+    }else{
+      DT::renderDT({DT::formatRound(DT::datatable(
+        resBench,
+        extensions = c('Buttons', 'FixedColumns'),
+        rownames = FALSE,
+        class = 'cell-border',
+        filter = "none",
+        options = list(
+          dom = 'Blfrtip',
+          scrollY = "400px",
+          scrollX = "400px",
+          buttons = c('copy','csv','excel','pdf','print'),
+          paging = F,
+          fixedColumns = list(leftColumns = 1))
+      ),numCols)
+      })
+    }
+    
+  }
+  
+}
+```
+
 ### Modeling parameters
 
 This section aims to provide the modeling table for the analysis in order to keep track of which environments were used in the analysis, what was the final model used for each trait and other potentially important parameters for future reference.
@@ -1894,7 +2189,7 @@ if (is.null(result)){
   
   modelingMta <- result$modeling[which(modeling$analysisId == idMta),]
   
-  if("params" %in% ls()){ # we will download the document
+  if(params$toDownload == TRUE){ # we will download the document
     printTable(modelingMta, autoWidthOpt = TRUE, scrollXOpt = FALSE,
                colNames = colnames(modelingMta))
   }else{
@@ -1923,165 +2218,5 @@ Boer M, van Rossum B (2022). LMMsolver: Linear Mixed Model Solver. R package ver
 Covarrubias-Pazaran G. (2024). lme4breeding: enabling genetic evaluation in the era of genomic data. bioRxiv, 2024-05.
 
 Covarrubias-Pazaran G. (2016). Genome assisted prediction of quantitative traits using the R package sommer. PLoS ONE 11(6):1-15.
-
-<p>&nbsp;</p>
-
-
-<p>&nbsp;</p>
-
-<!-- `r if (length( grep("check|chck|bnchmark|benchmark|chek|chec", unique(pred[pred$analysisId == idMta,"entryType"]), ignore.case = TRUE) ) > 0) {"### Percent check comparison to top 30 entries\n -->
-<!-- The following plots allow the user to compare the top 30 entries against the different checks/benchmarks present in the dataset for each trait. The table below that shows the wide-table of all possible comparisons for all traits.\n"}` -->
-
-<!-- ```{r } -->
-<!-- if (is.null(result)){ -->
-<!--   # invisible(NULL) -->
-<!-- } else { -->
-<!--   result$status <- result$status#[1:6,] -->
-<!--   idMta <- result$status[which(result$status$module == "mtaLmms"),"analysisId"] -->
-<!--   idMta <- idMta[length(idMta)] -->
-<!--   pred <- result$predictions -->
-<!--   pred <- pred[pred$analysisId == idMta,] -->
-
-<!--   traitChecks <- unique(pred$trait) -->
-
-<!--   entryTypePresent <- table((unique(pred[,c("designation","entryType")]))$entryType) -->
-<!--   check1 <- which(entryTypePresent < 200) -->
-<!--   check2 <- grep("check|chck|bnchmark|benchmark|chek|chec", names(entryTypePresent), ignore.case = TRUE, value=FALSE) -->
-<!--   checksFound <- intersect(check1,check2) -->
-<!--   if(length(checksFound) > 0){ -->
-<!--     labelChecks <- names(entryTypePresent)[checksFound] -->
-<!--     nameOfChecks <- unique(pred[ which(pred$entryType %in% labelChecks) , "designation"]) -->
-
-<!--     if("params" %in% ls()){ # we will download the document -->
-<!--       shinyjs::hide() -->
-<!--     }else{ -->
-<!--       inputPanel( -->
-<!--         selectInput(ns("checkMta"), -->
-<!--                     label = "Check to compare to:", -->
-<!--                     choices = nameOfChecks -->
-<!--         ), -->
-<!--         selectInput(ns("checkMtaTrait"), -->
-<!--                     label = "View trait:", -->
-<!--                     choices = traitChecks -->
-<!--         ), -->
-<!--       ) -->
-<!--     } -->
-<!--   }else{ -->
-<!--     shinyjs::hide() -->
-<!--   } -->
-
-<!-- } -->
-<!-- ``` -->
-
-<!-- ```{r, results='asis', fig.height=20} -->
-<!-- if (is.null(result)){ -->
-<!--   # invisible(NULL) -->
-<!-- } else { -->
-
-<!--   if(length(checksFound) > 0){ -->
-
-<!--     if("params" %in% ls()){ # we will download the document -->
-
-<!--       cat(paste0("###   {.tabset .tabset-pills}    \n\n  ")) -->
-
-<!--       for(iCheck in nameOfChecks){ -->
-
-<!--         cat("\n\n####", iCheck, "{.tabset .tabset-pills}       \n\n") -->
-
-<!--         for(iTrait in traitChecks){ -->
-
-<!--           cat("\n\n#####", iTrait, "{.tabset .tabset-pills}       \n\n") -->
-
-<!--           predListBench <- split(pred, pred$trait) -->
-<!--           predListBench2 <- lapply(predListBench, function(x){ # x <- predListBench[[1]] -->
-<!--             checkSelected <- which(x$designation == iCheck) -->
-<!--             if(length(checkSelected) > 0){ -->
-<!--               x$predictedValue2 <- ( (x$predictedValue / x$predictedValue[checkSelected]) - 1 ) * 100 -->
-<!--               x$UB <- ( ( (x$predictedValue+x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100 -->
-<!--               x$LB <- ( ( (x$predictedValue-x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100 -->
-<!--               x <- x[with(x, order(-predictedValue2)), ] -->
-<!--               x <- x[unique(c(1:min(c(30, nrow(x))),which(x$designation == iCheck ))),] -->
-<!--               return(x) -->
-<!--             } -->
-<!--           }) -->
-<!--           temp.pred.box.bench <- do.call(rbind, predListBench2) -->
-<!--           temp.pred.box.bench$entryTypeSimple <- LETTERS[as.numeric(as.factor(temp.pred.box.bench$entryType))] -->
-<!--           temp.pred.box.bench <- temp.pred.box.bench[which(temp.pred.box.bench$trait == iTrait),] -->
-<!--           pb <- ggplot2::ggplot( -->
-<!--             data = temp.pred.box.bench, -->
-<!--             mapping = ggplot2::aes( -->
-<!--               x = designation, # reorder(designation, -predictedValue2), -->
-<!--               y = predictedValue2, -->
-<!--               col = entryType, -->
-<!--               text = paste( -->
-<!--                 paste0('<br>', "designation: ", designation), -->
-<!--                 paste0('<br>', "entry type: ", entryType), -->
-<!--                 paste0('<br>', "predicted value: ", round(predictedValue2, 4)), -->
-<!--                 # paste0('<br>', "standard error: ", round(stdError2, 4)), -->
-<!--                 paste0("<br>predVal +- stdError: (", round(LB, 2) , ", ", -->
-<!--                        round(UB, 4), ")")))) + -->
-<!--             ggplot2::theme_classic() +  ggplot2::geom_point() + #facet_grid(~trait, scales = "free_x")+ -->
-<!--             ggplot2::geom_errorbar(ggplot2::aes(ymax = UB,# predictedValue2 + stdError2, -->
-<!--                                                 ymin = LB#predictedValue2 - stdError2 -->
-<!--             ), position = ggplot2::position_dodge(0.5), -->
-<!--             width = 0.10) + -->
-<!--             ggplot2::labs(title = "Percentage over benchmark", x = "designation", y = "% over check entry", col = "Entry type") + ggplot2::geom_hline(yintercept=0, linetype='dotted', col = 'grey') + -->
-<!--             ggplot2::theme(axis.text.x = ggplot2::element_blank(), legend.position = "bottom") + ggplot2::guides(fill=guide_legend(nrow=3,byrow=TRUE)) #+ ggplot2::facet_wrap(~trait, scales = "free", ncol=2) -->
-
-<!--           print(htmltools::tagList(plotly::ggplotly(pb))) -->
-
-<!--         } -->
-
-<!--       } -->
-
-<!--     }else{ -->
-
-<!--       plotly::renderPlotly({ -->
-
-<!--         predListBench <- split(pred, pred$trait) -->
-<!--         predListBench2 <- lapply(predListBench, function(x){ # x <- predListBench[[1]] -->
-<!--           checkSelected <- which(x$designation == input$checkMta) -->
-<!--           if(length(checkSelected) > 0){ -->
-<!--             x$predictedValue2 <- ( (x$predictedValue / x$predictedValue[checkSelected]) - 1 ) * 100 -->
-<!--             x$UB <- ( ( (x$predictedValue+x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100 -->
-<!--             x$LB <- ( ( (x$predictedValue-x$stdError) / x$predictedValue[checkSelected]) - 1 ) * 100 -->
-<!--             x <- x[with(x, order(-predictedValue2)), ] -->
-<!--             x <- x[unique(c(1:min(c(30, nrow(x))),which(x$designation == input$checkMta))),] -->
-<!--             return(x) -->
-<!--           } -->
-<!--         }) -->
-<!--         temp.pred.box.bench <- do.call(rbind, predListBench2) -->
-<!--         temp.pred.box.bench$entryTypeSimple <- LETTERS[as.numeric(as.factor(temp.pred.box.bench$entryType))] -->
-<!--         temp.pred.box.bench <- temp.pred.box.bench[which(temp.pred.box.bench$trait == input$checkMtaTrait),] -->
-<!--         pb <- ggplot2::ggplot( -->
-<!--           data = temp.pred.box.bench, -->
-<!--           mapping = ggplot2::aes( -->
-<!--             x = designation, # reorder(designation, -predictedValue2), -->
-<!--             y = predictedValue2, -->
-<!--             col = entryType, -->
-<!--             text = paste( -->
-<!--               paste0('<br>', "designation: ", designation), -->
-<!--               paste0('<br>', "entry type: ", entryType), -->
-<!--               paste0('<br>', "predicted value: ", round(predictedValue2, 4)), -->
-<!--               # paste0('<br>', "standard error: ", round(stdError2, 4)), -->
-<!--               paste0("<br>predVal +- stdError: (", round(LB, 2) , ", ", -->
-<!--                      round(UB, 4), ")")))) + -->
-<!--           ggplot2::theme_classic() +  ggplot2::geom_point() + #facet_grid(~trait, scales = "free_x")+ -->
-<!--           ggplot2::geom_errorbar(ggplot2::aes(ymax = UB,# predictedValue2 + stdError2, -->
-<!--                                               ymin = LB#predictedValue2 - stdError2 -->
-<!--           ), position = ggplot2::position_dodge(0.5), -->
-<!--           width = 0.10) + -->
-<!--           ggplot2::labs(title = "Percentage over benchmark", x = "designation", y = "% over check entry", col = "Entry type") + ggplot2::geom_hline(yintercept=0, linetype='dotted', col = 'grey') + -->
-<!--           ggplot2::theme(axis.text.x = ggplot2::element_blank(), legend.position = "bottom") + ggplot2::guides(fill=guide_legend(nrow=3,byrow=TRUE)) # + ggplot2::facet_wrap(~trait, scales = "free", ncol=2) -->
-<!--         plotly::ggplotly(pb) -->
-
-<!--       }) -->
-
-<!--     } -->
-
-<!--   } -->
-
-<!-- } -->
-<!-- ``` -->
 
 

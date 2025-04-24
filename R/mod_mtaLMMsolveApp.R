@@ -1223,7 +1223,11 @@ mod_mtaLMMsolveApp_server <- function(id, data){
         }, server = FALSE)
         ## Report tab
         output$reportMta <- renderUI({
-          HTML(markdown::markdownToHTML(knitr::knit(system.file("rmd","reportMtaLMMsolver.Rmd",package="bioflow"), quiet = TRUE), fragment.only=TRUE))
+          shiny::withMathJax(HTML(readLines(rmarkdown::render(input = system.file("rmd","reportMtaLMMsolver.Rmd",package="bioflow"),
+                                                              output_format = rmarkdown::html_fragment(),
+                                                              params = list(toDownload = FALSE, modelUsed=input$radio),
+                                                              quiet = TRUE))))
+          # HTML(markdown::markdownToHTML(knitr::knit(system.file("rmd","reportMtaLMMsolver.Rmd",package="bioflow"), quiet = TRUE), fragment.only=TRUE))
           # HTML(markdown::markdownToHTML(knitr::knit("./R/reportMta.Rmd", quiet = TRUE), fragment.only=TRUE))
         })
 
@@ -1243,7 +1247,7 @@ mod_mtaLMMsolveApp_server <- function(id, data){
             file.copy(src, 'report.Rmd', overwrite = TRUE)
             file.copy(src2, 'resultMtaLMMsolver.RData', overwrite = TRUE)
             shinybusy::show_modal_spinner('fading-circle', text = 'Processing...')
-            out <- rmarkdown::render('report.Rmd', params = list(toDownload=TRUE),switch(
+            out <- rmarkdown::render('report.Rmd', params = list(toDownload=TRUE, modelUsed=input$radio),switch(
               "HTML",
               HTML = rmdformats::robobook(toc_depth = 4)
               # HTML = rmarkdown::html_document()

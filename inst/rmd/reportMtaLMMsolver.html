@@ -1,0 +1,292 @@
+
+
+
+<div id="objectives-of-multi-trial-analysis" class="section level3">
+<h3>Objectives of Multi-Trial Analysis</h3>
+<p>The objective of this dashboard is to help scientist to understand
+the following points:</p>
+<ol style="list-style-type: decimal">
+<li><p>Overall number of entries and effect types included in the multi
+trial analysis (input)</p></li>
+<li><p>High-level view of the phenotypic adjusted means included in the
+analysis (input)</p></li>
+<li><p>Number of entries connecting the different environments per trait
+(input)</p></li>
+<li><p>Phenotypic correlation between environments for the traits
+present (input)</p></li>
+<li><p>Across environment KPIs per trait such as reliability and
+variance component ratios (output)</p></li>
+<li><p>Individual across environment predictions for each trait
+(output)</p></li>
+<li><p>Individual sensitivity and stability values across environments
+(output)</p></li>
+<li><p>Percent check comparison against the different benchmark
+varieties present in the dataset (output)</p></li>
+<li><p>Genetic correlation between the traits (output)</p></li>
+</ol>
+<p>Understanding these data features should allow the scientist to
+identify which traits express more genotype by environment interactions
+and how they should be selected. It should also allow the scientist to
+assess the correlation between traits and how the product profile should
+be addressed to maximize genetic gains while developing the needed
+varieties at the same time. Materials with the highest performance and
+sensitivity to the environment could be potential nominations for
+advancement although we recommend to don’t select new parents or
+products until the results from the multi-trial analysis are analyzed
+with a selection index.</p>
+</div>
+<div id="metrics-table-of-parameters" class="section level3">
+<h3>Metrics: Table of parameters</h3>
+<p>The following table aims to make a high-level assessment of the
+different types of entries included in the analysis across
+environments.</p>
+<div class="datatables html-widget html-widget-output shiny-report-size html-fill-item" id="mtaLMMsolveApp_1-out9bd3b29f704de27a" style="width:100%;height:auto;"></div>
+</div>
+<div id="metadata-map-of-trials-planted" class="section level3">
+<h3>Metadata: Map of trials planted</h3>
+<p>The following map allows you to assess the location where trials are
+planted.</p>
+<div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="mtaLMMsolveApp_1-out44a75b29724b8362" style="width:100%;height:400px;"></div>
+</div>
+<div id="predictions-by-environment-merit-distribution" class="section level3">
+<h3>Predictions: By environment merit distribution</h3>
+<p>The following boxplot allows you to inspect the distribution of
+adjusted means (y-axis) from the different environments for each trait
+that were used as input for the analysis. The environments are sorted by
+environmental mean to understand the slope of the regression fitted in
+the Finlay-Wilkinson model. It is recommended that you have at least 6
+environments to fit the random regressions over the environmental
+indices or other weather and soil variables</p>
+<p>
+ 
+</p>
+<div class="shiny-input-panel">
+<div class="shiny-flow-layout">
+<div>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="mtaLMMsolveApp_1-boxplotMtaPredsType-label" for="mtaLMMsolveApp_1-boxplotMtaPredsType">Effect type</label>
+<div>
+<select id="mtaLMMsolveApp_1-boxplotMtaPredsType" class="shiny-input-select"><option value="designation" selected>designation</option></select>
+<script type="application/json" data-for="mtaLMMsolveApp_1-boxplotMtaPredsType" data-nonempty>{"plugins":["selectize-plugin-a11y"]}</script>
+</div>
+</div>
+</div>
+<div>
+<div class="col-sm-12"></div>
+</div>
+<div>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="mtaLMMsolveApp_1-boxplotMtaPredsTrait-label" for="mtaLMMsolveApp_1-boxplotMtaPredsTrait">Trait</label>
+<div>
+<select id="mtaLMMsolveApp_1-boxplotMtaPredsTrait" class="shiny-input-select"><option value="Plant_Height_cm" selected>Plant_Height_cm</option>
+<option value="Ear_Height_cm">Ear_Height_cm</option>
+<option value="Yield_Mg_ha">Yield_Mg_ha</option></select>
+<script type="application/json" data-for="mtaLMMsolveApp_1-boxplotMtaPredsTrait" data-nonempty>{"plugins":["selectize-plugin-a11y"]}</script>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div style="width:auto; height:auto; overflow:auto">
+<div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="mtaLMMsolveApp_1-out9a7d7b9d3a68b61b" style="width:100%;height:400px;"></div>
+</div>
+</div>
+<div id="predictions-connectivity-between-environments" class="section level3">
+<h3>Predictions: Connectivity between environments</h3>
+<p>The following heatmap and histogram allows you to assess the
+connectivity (gennotypes in common) between different environments for a
+given trait. Our recommendation is that each pair of environments should
+at least have 30 genotypes in common in order to estimate genetic
+correlations and at least 2-3 entries in common to adjust across
+environment means. We classify as low everything below 30, intermediate
+connectivity between 30 to 60, and high everything above 60.</p>
+<p>
+ 
+</p>
+<div class="shiny-input-panel">
+<div class="shiny-flow-layout">
+<div>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="mtaLMMsolveApp_1-traitMtaConnect-label" for="mtaLMMsolveApp_1-traitMtaConnect">Trait</label>
+<div>
+<select id="mtaLMMsolveApp_1-traitMtaConnect" class="shiny-input-select"><option value="Plant_Height_cm" selected>Plant_Height_cm</option>
+<option value="Ear_Height_cm">Ear_Height_cm</option>
+<option value="Yield_Mg_ha">Yield_Mg_ha</option></select>
+<script type="application/json" data-for="mtaLMMsolveApp_1-traitMtaConnect" data-nonempty>{"plugins":["selectize-plugin-a11y"]}</script>
+</div>
+</div>
+</div>
+<div>
+<div class="form-group shiny-input-container">
+<div class="checkbox">
+<label>
+<input id="mtaLMMsolveApp_1-freqConnect" type="checkbox" class="shiny-input-checkbox" checked="checked"></input>
+<span>Show frequency distribution</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div style="width:auto; height:auto; overflow:auto">
+<div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="mtaLMMsolveApp_1-outff5f9aa3b9fabe02" style="width:100%;height:400px;"></div>
+</div>
+</div>
+<div id="predictions-correlations-between-environments" class="section level3">
+<h3>Predictions: Correlations between environments</h3>
+<p>The following heatmap and histogram allows to assess the genetic
+correlations among the different environment one trait at a time. If the
+user modeled GxE, this matrix is calculated as the correlation between
+the environment-specific estimates for individuals. If a pure
+main-effect model is specified this matrix is calculated as the
+correlation between the single-trial analysis estimates. We recommend
+that only environments that are on-average positively correlated with
+the main cluster (i.e., rG&gt;0) are included in the multi-trial
+analysis to guarantee decent rates of genetic gain and adapted products
+in the TPE.</p>
+<p>
+ 
+</p>
+<div style="width:auto; height:auto; overflow:auto">
+<p>No interaction present. Skipping correlation plot.</p>
+</div>
+</div>
+<div id="predictions-biplot-by-trait" class="section level3">
+<h3>Predictions: Biplot by trait</h3>
+<p>The following graph allows to see the clustering of different
+genotypes in the TPE for each trait. This can help you identify clusters
+of environments and better define the TPE.</p>
+<p>
+ 
+</p>
+<div style="width:auto; height:auto; overflow:auto">
+<p>No interaction present. Skipping biplot.</p>
+</div>
+</div>
+<div id="predictions-merit-estimates-of-top-entries" class="section level3">
+<h3>Predictions: Merit estimates of top entries</h3>
+<p>In the left-side plot you can observe the comparison between the top
+100 entries from each effect type category for the different traits. If
+a category has less than a 100 entries all individuals are displayed.
+This should allow you to identify the entries that could potentially
+become parents or nominated for advanced stages of evaluation. We would
+recommend you to wait until a selection index is calculated. In the
+right-side plot you can see a boxplot of the entire distribution of
+values for each effectType category so you know until which trait-values
+the rest of the entries that are not plotted in the left-side plot
+reach.</p>
+<div class="shiny-input-panel">
+<div class="shiny-flow-layout">
+<div>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="mtaLMMsolveApp_1-scatterMtaPredsType-label" for="mtaLMMsolveApp_1-scatterMtaPredsType">Effect type:</label>
+<div>
+<select id="mtaLMMsolveApp_1-scatterMtaPredsType" class="shiny-input-select"><option value="designation" selected>designation</option></select>
+<script type="application/json" data-for="mtaLMMsolveApp_1-scatterMtaPredsType" data-nonempty>{"plugins":["selectize-plugin-a11y"]}</script>
+</div>
+</div>
+</div>
+<div>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="mtaLMMsolveApp_1-scatterMtaPredsTrait-label" for="mtaLMMsolveApp_1-scatterMtaPredsTrait">Trait</label>
+<div>
+<select id="mtaLMMsolveApp_1-scatterMtaPredsTrait" class="shiny-input-select"><option value="Plant_Height_cm" selected>Plant_Height_cm</option>
+<option value="Ear_Height_cm">Ear_Height_cm</option>
+<option value="Yield_Mg_ha">Yield_Mg_ha</option></select>
+<script type="application/json" data-for="mtaLMMsolveApp_1-scatterMtaPredsTrait" data-nonempty>{"plugins":["selectize-plugin-a11y"]}</script>
+</div>
+</div>
+</div>
+<div>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="mtaLMMsolveApp_1-scatterMtaPredsEnvir-label" for="mtaLMMsolveApp_1-scatterMtaPredsEnvir">Environment</label>
+<div>
+<select id="mtaLMMsolveApp_1-scatterMtaPredsEnvir" class="shiny-input-select"><option value="(Intercept)" selected>(Intercept)</option>
+<option value="value_Plant_Height_cmenvIndex">value_Plant_Height_cmenvIndex</option></select>
+<script type="application/json" data-for="mtaLMMsolveApp_1-scatterMtaPredsEnvir" data-nonempty>{"plugins":["selectize-plugin-a11y"]}</script>
+</div>
+</div>
+</div>
+<div>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="mtaLMMsolveApp_1-scatterMtaPredsTop-label" for="mtaLMMsolveApp_1-scatterMtaPredsTop">Number of Entries</label>
+<input id="mtaLMMsolveApp_1-scatterMtaPredsTop" type="number" class="shiny-input-number form-control" value="100" min="1"></input>
+</div>
+</div>
+</div>
+</div>
+<div style="width:auto; height:auto; overflow:auto">
+<div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="mtaLMMsolveApp_1-out77a3ac164a68fd5f" style="width:100%;height:400px;"></div>
+</div>
+</div>
+<div id="predictions-table-of-estimates" class="section level3">
+<h3>Predictions: Table of estimates</h3>
+<p>The following table allows you to inspect the trait predictions in
+wide format together with the QTL profile (in case those are available)
+to understand the type of data that would be used to calculate a
+selection index (e.g., desire index).</p>
+<p>
+ 
+</p>
+<div class="datatables html-widget html-widget-output shiny-report-size html-fill-item" id="mtaLMMsolveApp_1-out072f9215cfbf54b3" style="width:100%;height:auto;"></div>
+</div>
+<div id="predictions-correlations-between-traits" class="section level3">
+<h3>Predictions: Correlations between traits</h3>
+<p>The following heatmap and histogram allows to see the genetic
+correlations among traits calculated using across environment estimates
+of merit for the different traits. This can be used to understand the
+implications of selecting for a set of traits to achieve a product
+profile and make neccesary adjustment to the selection strategy.</p>
+<p>
+ 
+</p>
+<div class="shiny-input-panel">
+<div class="shiny-flow-layout">
+<div>
+<div class="form-group shiny-input-container">
+<div class="checkbox">
+<label>
+<input id="mtaLMMsolveApp_1-freqCor" type="checkbox" class="shiny-input-checkbox" checked="checked"></input>
+<span>Show frequency distribution</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div style="width:auto; height:auto; overflow:auto">
+<div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="mtaLMMsolveApp_1-out40322d294ae757c9" style="width:100%;height:400px;"></div>
+</div>
+<div style="width:auto; height:auto; overflow:auto">
+
+</div>
+</div>
+<div id="modeling-parameters" class="section level3">
+<h3>Modeling parameters</h3>
+<p>This section aims to provide the modeling table for the analysis in
+order to keep track of which environments were used in the analysis,
+what was the final model used for each trait and other potentially
+important parameters for future reference.</p>
+<div class="datatables html-widget html-widget-output shiny-report-size html-fill-item" id="mtaLMMsolveApp_1-out727837764c16211e" style="width:100%;height:auto;"></div>
+</div>
+<div id="references-of-methods-used" class="section level3">
+<h3>References of methods used</h3>
+<p>Finlay, K. W., &amp; Wilkinson, G. N. (1963). The analysis of
+adaptation in a plant-breeding programme. Australian journal of
+agricultural research, 14(6), 742-754.</p>
+<p>Henderson Jr, C. R. (1982). Analysis of covariance in the mixed
+model: higher-level, nonhomogeneous, and random regressions. Biometrics,
+623-640.</p>
+<p>Odegard, J., Indahl, U., Stranden, I., &amp; Meuwissen, T. H. (2018).
+Large-scale genomic prediction using singular value decomposition of the
+genotype matrix. Genetics Selection Evolution, 50(1), 1-12.</p>
+<p>R Core Team (2021). R: A language and environment for statistical
+computing. R Foundation for Statistical Computing, Vienna, Austria. URL
+<a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</p>
+<p>Boer M, van Rossum B (2022). LMMsolver: Linear Mixed Model Solver. R
+package version 1.0.4.9000.</p>
+<p>Covarrubias-Pazaran G. (2024). lme4breeding: enabling genetic
+evaluation in the era of genomic data. bioRxiv, 2024-05.</p>
+<p>Covarrubias-Pazaran G. (2016). Genome assisted prediction of
+quantitative traits using the R package sommer. PLoS ONE 11(6):1-15.</p>
+</div>
