@@ -5,7 +5,7 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: html_document
 params:
   toDownload: FALSE
-  modelUsed: NULL
+  # modelUsed: NULL
 ---
 
 ```{r setup, include=FALSE}
@@ -197,7 +197,7 @@ if (is.null(result)){
   metricsMta <- result$metrics[which(metrics$analysisId == idMta),]
   metricsMta <- metricsMta[, setdiff(colnames(metricsMta),c("module","analysisId"))]
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     printTable(metricsMta, autoWidthOpt = TRUE, scrollXOpt = FALSE,
                colNames = colnames(metricsMta),
                numericColNames = c("value","stdError"),
@@ -236,7 +236,7 @@ if (is.null(result)){
     
     if(length(c(latitude,longitude)) == 2){
       colnames(xx) <- cgiarBase::replaceValues(colnames(xx), Search = paste0("value_",c(latitude,longitude),"mean") , Replace = c("latitude","longitude"))
-      if(params$toDownload == TRUE){ # we will download the document
+      if("params" %in% ls()){ # we will download the document
         
         world <- ggplot2::map_data("world")
         p <- ggplot2::ggplot() + # + 
@@ -300,7 +300,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     shinyjs::hide()
   }else{ # input <- list(boxplotMtaPredsTrait="YLDTONHA",boxplotMtaPredsType="environment_designation")
     inputPanel(
@@ -335,7 +335,7 @@ if (is.null(result)){
     effectTypes_BEMD <- effectTypes[effectTypes %in% c("environment_designation", "designation")]
   }
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     
     cat(paste0("###  {.tabset .tabset-pills}    \n\n  "))
     for(iType in effectTypes_BEMD){
@@ -446,7 +446,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     shinyjs::hide()
   }else{ # input<-list(traitMtaConnect="YLDTONHA")
     inputPanel(shiny::selectInput(ns("traitMtaConnect"), 
@@ -476,7 +476,7 @@ if (is.null(result)){
   mydataSta <- result$predictions[which(result$predictions$analysisId %in% idSta),] # extract predictions
   # mydataSta[,"environment"] <- gsub("[[:punct:]]", "", mydataSta[,"environment"] )
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     
     cat(paste0("###  {.tabset .tabset-pills}    \n\n  "))
     
@@ -632,7 +632,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     shinyjs::hide()
   }else{ # input <- list(traitPredictionsCorrelation=traits[1],corrplotMtaPredsType=effectTypes[1])
     # if(length(setdiff(effectTypes, c("environment", "designation", "(Intercept)"))) > 0){
@@ -683,7 +683,7 @@ if (is.null(result)){
   
   # if(length(setdiff(effectTypes, c("environment", "designation", "(Intercept)"))) > 0){
   if(sum(stringr::str_detect(effectTypes, "_designation")) > 1){
-    if(params$toDownload == TRUE){ # we will download the document
+    if("params" %in% ls()){ # we will download the document
       
       cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
       
@@ -862,7 +862,7 @@ if (is.null(result)){
   } else if(sum(stringr::str_detect(effectTypes, "_designation")) == 1){
     if(effectTypes[which(stringr::str_detect(effectTypes, "_designation"))] == "environment_designation"){
       
-      if(params$toDownload == TRUE){ # we will download the document
+      if("params" %in% ls()){ # we will download the document
         
         cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
         
@@ -1069,7 +1069,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     shinyjs::hide()
   }else{
     if(sum(stringr::str_detect(effectTypes, "_designation")) > 1){
@@ -1107,7 +1107,7 @@ if (is.null(result)){
 } else {
   # if(length(setdiff(effectTypes, c("environment", "designation", "(Intercept)"))) > 0){
   if(sum(stringr::str_detect(effectTypes, "_designation")) > 1){
-    if(params$toDownload == TRUE){ # we will download the document
+    if("params" %in% ls()){ # we will download the document
       cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
       
       for(iTrait3 in traits){
@@ -1249,7 +1249,7 @@ if (is.null(result)){
   } else if(sum(stringr::str_detect(effectTypes, "_designation")) == 1){
     if(effectTypes[which(stringr::str_detect(effectTypes, "_designation"))] == "environment_designation"){
       
-      if(params$toDownload == TRUE){ # we will download the document
+      if("params" %in% ls()){ # we will download the document
         
         cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
         
@@ -1407,7 +1407,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     shinyjs::hide()
   }else{ # input <- list(scatterMtaPredsType=effectTypes[1], scatterMtaPredsTrait=traits[1], scatterMtaPredsEnvir=envirTypes[1])
     inputPanel(
@@ -1447,7 +1447,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     
     cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
     
@@ -1688,12 +1688,12 @@ if (is.null(result)){
   pred.mta.wide <- rbind(pred.mta.wide1, pred.mta.wide2)
 
   # to deduct intercept from the envIndex_designation effectType to get slope for FW model
-  if(params$modelUsed == "fw_model"){
-    for (i in 1:length(unique(pred.mta$trait))){
-      pred.mta.wide[grepl("envIndex_designation",pred.mta.wide$effectType),unique(pred.mta$trait)[i]] <-
-        pred.mta.wide[grepl("envIndex_designation",pred.mta.wide$effectType),unique(pred.mta$trait)[i]] - pred.mta.wide[pred.mta.wide$effectType == "(Intercept)",unique(pred.mta$trait)[i]]
-    }
-  }
+  # if(params$modelUsed == "fw_model"){
+  #   for (i in 1:length(unique(pred.mta$trait))){
+  #     pred.mta.wide[grepl("envIndex_designation",pred.mta.wide$effectType),unique(pred.mta$trait)[i]] <-
+  #       pred.mta.wide[grepl("envIndex_designation",pred.mta.wide$effectType),unique(pred.mta$trait)[i]] - pred.mta.wide[pred.mta.wide$effectType == "(Intercept)",unique(pred.mta$trait)[i]]
+  #   }
+  # }
     
   if(!is.null(result$data$qtl)  ){ # there's QTL information
     if(nrow(result$data$qtl)>0){
@@ -1703,7 +1703,7 @@ if (is.null(result)){
     }
   }
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     printTable(pred.mta.wide, autoWidthOpt = TRUE, scrollXOpt = FALSE,
                colNames = colnames(pred.mta.wide),
                numericColNames = traits,
@@ -1731,7 +1731,7 @@ if (is.null(result)){
   # invisible(NULL)
 } else {
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document
     shinyjs::hide()
   }else{ # input <- list(corrplotTraitMtaPredsType=effectTypes[1],corrplotTraitMtaPredsEnv=envirTypes[1])
     if(length(traits) > 1){
@@ -1765,7 +1765,7 @@ if (is.null(result)){
   
   if(length(traits) > 1){
     # if(nrow(corr) > 1){
-    if(params$toDownload == TRUE){ # we will download the document
+    if("params" %in% ls()){ # we will download the document
       
       cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
       
@@ -1948,7 +1948,7 @@ if (is.null(result)){
     labelChecks <- names(entryTypePresent)[checksFound]
     nameOfChecks <- unique(pred[ which(pred$entryType %in% labelChecks & pred$effectType == "designation") , "designation"])
 
-    if(params$toDownload == TRUE){ # we will download the document
+    if("params" %in% ls()){ # we will download the document
       shinyjs::hide()
     }else{
       inputPanel(
@@ -1978,7 +1978,7 @@ if (is.null(result)){
 
   if(length(checksFound) > 0){
 
-    if(params$toDownload == TRUE){ # we will download the document
+    if("params" %in% ls()){ # we will download the document
 
       cat(paste0("###   {.tabset .tabset-pills}    \n\n  "))
 
@@ -2153,7 +2153,7 @@ if (is.null(result)){
     }
     numCols <- colnames(resBench)[-c(1)]
     
-    if(params$toDownload == TRUE){ # we will download the document
+    if("params" %in% ls()){ # we will download the document
       printTable(resBench, colNames = colnames(resBench), fixedCol = 1, filt = "none")
     }else{
       DT::renderDT({DT::formatRound(DT::datatable(
@@ -2189,7 +2189,7 @@ if (is.null(result)){
   
   modelingMta <- result$modeling[which(modeling$analysisId == idMta),]
   
-  if(params$toDownload == TRUE){ # we will download the document
+  if("params" %in% ls()){ # we will download the document #params$toDownload == TRUE
     printTable(modelingMta, autoWidthOpt = TRUE, scrollXOpt = FALSE,
                colNames = colnames(modelingMta))
   }else{

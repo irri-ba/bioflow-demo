@@ -1223,11 +1223,11 @@ mod_mtaLMMsolveApp_server <- function(id, data){
         }, server = FALSE)
         ## Report tab
         output$reportMta <- renderUI({
-          shiny::withMathJax(HTML(readLines(rmarkdown::render(input = system.file("rmd","reportMtaLMMsolver.Rmd",package="bioflow"),
-                                                              output_format = rmarkdown::html_fragment(),
-                                                              params = list(toDownload = FALSE, modelUsed=input$radio),
-                                                              quiet = TRUE))))
-          # HTML(markdown::markdownToHTML(knitr::knit(system.file("rmd","reportMtaLMMsolver.Rmd",package="bioflow"), quiet = TRUE), fragment.only=TRUE))
+          # shiny::withMathJax(HTML(readLines(rmarkdown::render(input = system.file("rmd","reportMtaLMMsolver.Rmd",package="bioflow"),
+          #                                                     output_format = rmarkdown::html_fragment(),
+          #                                                     params = list(toDownload = FALSE, modelUsed=input$radio),
+          #                                                     quiet = TRUE))))
+          HTML(markdown::markdownToHTML(knitr::knit(system.file("rmd","reportMtaLMMsolver.Rmd",package="bioflow"), quiet = TRUE), fragment.only=TRUE))
           # HTML(markdown::markdownToHTML(knitr::knit("./R/reportMta.Rmd", quiet = TRUE), fragment.only=TRUE))
         })
 
