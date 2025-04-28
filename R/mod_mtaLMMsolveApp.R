@@ -1247,11 +1247,11 @@ mod_mtaLMMsolveApp_server <- function(id, data){
             file.copy(src, 'report.Rmd', overwrite = TRUE)
             file.copy(src2, 'resultMtaLMMsolver.RData', overwrite = TRUE)
             shinybusy::show_modal_spinner('fading-circle', text = 'Processing...')
-            out <- rmarkdown::render('report.Rmd', params = list(toDownload=TRUE, modelUsed=input$radio),switch(
+            out <- rmarkdown::render('report.Rmd', params = list(toDownload=TRUE),switch(
               "HTML",
               HTML = rmdformats::robobook(toc_depth = 4)
               # HTML = rmarkdown::html_document()
-            ))
+            )) #, modelUsed=input$radio
             shinybusy::remove_modal_spinner()
             file.rename(out, file)
           }

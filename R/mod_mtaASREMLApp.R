@@ -349,7 +349,7 @@ mod_mtaASREMLApp_ui <- function(id) {
                                                textOutput(ns("outMtaAsr")),
                                       ),#end run analysis
                                       )#end tabset input
-                                    
+
                            ),#end input panel
                            tabPanel(div(icon("arrow-right-from-bracket"), "Output tabs" ) , value = "outputTabs",
                                     tabsetPanel(
@@ -399,22 +399,22 @@ mod_mtaASREMLApp_server <- function(id, data){
 
     ################
     ##ASReml license status
-    output$statuslicenseasr <- renderUI(
-      # check library(asreml)
-      if("asreml"%in%rownames(installed.packages())==TRUE){
-        library(asreml)
-        csasr=asreml.license.status(quiet = FALSE, task = "checkout", json = "")
-        if(csasr$statusMessage=="No error"){
-            HTML( as.character(div(style="color: green; font-size: 20px;", "Correct license")) )
-          }else{
-            HTML( as.character(div(style="color: red; font-size: 20px;", "Please make sure to write the activation code of license in the R console")) )
-            asreml.license.activate()
-          }
-      }else{
-        HTML( as.character(div(style="color: red; font-size: 20px;", "Please make sure that you have library asreml installed")) )
-      }
-
-    )
+    # output$statuslicenseasr <- renderUI(
+    #   # check library(asreml)
+    #   if("asreml"%in%rownames(installed.packages())==TRUE){
+    #     library(asreml)
+    #     csasr=asreml.license.status(quiet = FALSE, task = "checkout", json = "")
+    #     if(csasr$statusMessage=="No error"){
+    #         HTML( as.character(div(style="color: green; font-size: 20px;", "Correct license")) )
+    #       }else{
+    #         HTML( as.character(div(style="color: red; font-size: 20px;", "Please make sure to write the activation code of license in the R console")) )
+    #         asreml.license.activate()
+    #       }
+    #   }else{
+    #     HTML( as.character(div(style="color: red; font-size: 20px;", "Please make sure that you have library asreml installed")) )
+    #   }
+    #
+    # )
     #################
     ## version
     observeEvent(data(), {
@@ -584,11 +584,11 @@ mod_mtaASREMLApp_server <- function(id, data){
       choices <- as.vector(c(setdiff(colnames(mydata), c("predictedValue","stdError","reliability","analysisId","module") )))
 	    choicesint <- apply(combn(choices, 2), 2, \(x) paste(x, collapse = ":"))
 	    choices <- as.vector(c("none", choices, choicesint))
-      
+
       updateSelectInput(session,"TermsFixed",choices = choices, selected = "environment")
     })
 
-    
+
     ## left formula (actual effects) ## input <- list(version2MtaAsr=result$status$analysisId[2])
     observeEvent(c(data(),input$version2MtaAsr,input$trait2MtaAsr), {
       req(data())
@@ -609,7 +609,7 @@ mod_mtaASREMLApp_server <- function(id, data){
       choices <- c("designation",setdiff( setdiff(colnames(mydata),"designation"), c("predictedValue","stdError","reliability","analysisId","module") ) )
       choicesint <- apply(combn(choices, 2), 2, \(x) paste(x, collapse = ":"))
       choices <- as.vector(c("none", choices, choicesint))
-      
+
       updateSelectInput(session,"TermsRandom",choices = choices, selected = "designation")
     })
 
@@ -1120,7 +1120,7 @@ mod_mtaASREMLApp_server <- function(id, data){
     output$outMtaAsr <- renderPrint({
       outMtaAsr1()
     })
-      
+
     })
 }
 
