@@ -10,9 +10,9 @@
 mod_rggApp_ui <- function(id){
   ns <- NS(id)
   tagList(
-    
+
     tags$br(),
-    
+
     mainPanel( width = 12,
                tabsetPanel( id=ns("tabsMain"),
                             type = "tabs",
@@ -55,7 +55,7 @@ mod_rggApp_ui <- function(id){
                                             h2(strong("Software used")),
                                             p("R Core Team (2021). R: A language and environment for statistical computing. R Foundation for Statistical Computing,
                                 Vienna, Austria. URL https://www.R-project.org/."),
-                                            
+
                                             # column(width = 12, shiny::plotOutput(ns("plotDataDependencies")), ),
                                      ),
                             ),
@@ -66,7 +66,7 @@ mod_rggApp_ui <- function(id){
                                                 column(width=12, style = "background-color:grey; color: #FFFFFF",
                                                        column(width=6, selectInput(ns("version2Rgg"), "Data version to analyze", choices = NULL, multiple = FALSE) ),
                                                        column(width=3, radioButtons(ns("methodRgg"),"Method",choices=list("Mackay"="mackay","Piepho"="piepho"), selected="mackay") ),
-                                                       
+
                                                 ),
                                                 column(width=12),
                                                 shinydashboard::box(width = 12, status = "success",solidHeader=TRUE,collapsible = TRUE, collapsed = TRUE, title = "Visual aid (click on the '+' symbol on the right to open)",
@@ -170,12 +170,12 @@ mod_rggApp_ui <- function(id){
                                                 br(),
                                                 DT::DTOutput(ns("modelingRgg")),
                                        ),
-                                       
+
                                      )
                             )# end of output panel
                )) # end mainpanel
-    
-    
+
+
   )
 }
 
@@ -185,7 +185,7 @@ mod_rggApp_ui <- function(id){
 mod_rggApp_server <- function(id, data){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    
+
     # output$plotDataDependencies <- shiny::renderPlot({ dependencyPlot() })
     ############################################################################ clear the console
     hideAll <- reactiveValues(clearAll = TRUE)
@@ -453,11 +453,11 @@ mod_rggApp_server <- function(id, data){
       colnames(mydata) <- cgiarBase::replaceValues(colnames(mydata), Search = paramsPheno$value, Replace = paramsPheno$parameter )
       ##
       if(!is.null(data()$data$pedigree)){
-        
+
         myYears <- data()$data$pedigree
         paramsPed <- data()$metadata$pedigree
         colnames(myYears) <- cgiarBase::replaceValues(colnames(myYears), Search = paramsPed$value, Replace = paramsPed$parameter )
-        
+
         if( length(which(colnames(myYears) %in% "yearOfOrigin")) > 0){
           mydata <- merge(mydata, myYears[,c("designation","yearOfOrigin")], by="designation", all.x=TRUE)
           mydata <- mydata[which(mydata[,"trait"] %in% input$trait3Rgg),]
@@ -469,7 +469,7 @@ mod_rggApp_server <- function(id, data){
             mydata <- mydata[which(mydata$entryType %in% input$entryTypeToUse),]
           }
           mydata[, "environment"] <- as.factor(mydata[, "environment"]); mydata[, "designation"] <- as.factor(mydata[, "designation"])
-          
+
           if(input$methodRgg == "mackay"){
             res <- ggplot2::ggplot(mydata, ggplot2::aes(x=yearOfOrigin, y=predictedValue, color=effectType)) +
               ggplot2::geom_point() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, vjust = 1, hjust = 1)) +
@@ -479,12 +479,12 @@ mod_rggApp_server <- function(id, data){
               ggplot2::geom_point() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, vjust = 1, hjust = 1)) +
               ggplot2::ggtitle("View of current analyses available") + ggplot2::facet_grid(~ entryType)
           }
-          
+
           plotly::ggplotly(res)
         }
-        
+
       }
-      
+
     })
     output$plotPredictionsCleanOut2 <- plotly::renderPlotly({ # update plot
       req(data())
@@ -497,13 +497,13 @@ mod_rggApp_server <- function(id, data){
       paramsPheno <- paramsPheno[which(paramsPheno$parameter != "trait"),]
       colnames(mydata) <- cgiarBase::replaceValues(colnames(mydata), Search = paramsPheno$value, Replace = paramsPheno$parameter )
       ##
-      
+
       if(!is.null(data()$data$pedigree)){
-        
+
         myYears <- data()$data$pedigree
         paramsPed <- data()$metadata$pedigree
         colnames(myYears) <- cgiarBase::replaceValues(colnames(myYears), Search = paramsPed$value, Replace = paramsPed$parameter )
-        
+
         if( length(which(colnames(myYears) %in% "yearOfOrigin")) > 0){
           mydata <- merge(mydata, myYears[,c("designation","yearOfOrigin")], by="designation", all.x=TRUE)
           mydata <- mydata[which(mydata[,"trait"] %in% input$trait3Rgg2),]
@@ -512,16 +512,14 @@ mod_rggApp_server <- function(id, data){
             mydata <- mydata[which(mydata$effectType %in% input$effectTypeToUse),]
           }
           if(!is.null(input$entryTypeToUse)){
-            if(input$entryTypeToUse != ""){
-              mydata <- mydata[which(mydata$entryType %in% input$entryTypeToUse),]
-            }
+            mydata <- mydata[which(mydata$entryType %in% input$entryTypeToUse),]
           }
           mydata[, "environment"] <- as.factor(mydata[, "environment"]); mydata[, "designation"] <- as.factor(mydata[, "designation"])
-          
+
           if(length(input$yearsToUse) > 0){
             mydata <- mydata[which(mydata$yearOfOrigin %in% input$yearsToUse),]
           }
-          
+
           if(input$methodRgg == "mackay"){
             res <- ggplot2::ggplot(mydata, ggplot2::aes(x=yearOfOrigin, y=predictedValue, color=effectType)) +
               ggplot2::geom_point() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, vjust = 1, hjust = 1)) +
@@ -533,9 +531,9 @@ mod_rggApp_server <- function(id, data){
           }
           plotly::ggplotly(res)
         }
-        
+
       }
-      
+
     })
     ## render timestamps flow
     output$plotTimeStamps <- shiny::renderPlot({
@@ -580,7 +578,7 @@ mod_rggApp_server <- function(id, data){
         rownames(X) <- networkNames
         colnames(X) <- networkNames
         if(existNames){
-          
+
         }else{
           rownames(X) <-as.character(as.POSIXct(as.numeric(rownames(X)), origin="1970-01-01", tz="GMT"))
           colnames(X) <-as.character(as.POSIXct(as.numeric(colnames(X)), origin="1970-01-01", tz="GMT"))
@@ -623,10 +621,10 @@ mod_rggApp_server <- function(id, data){
     ##############################################################################################
     ##  actual run
     ## render result of "run" button click
-    
+
     my_rgg <- ExtendedTask$new(function(input, data) {
       promises::future_promise({
-        
+
         ### pseudo code to select top n (e.g., 5) lines per yearOfOrigin #########################
         # tmp <- data$predictions[data$predictions$module == "mtaLmms" &
         #                         data$predictions$effectType == "designation", ]
@@ -644,7 +642,7 @@ mod_rggApp_server <- function(id, data){
         #                                        !(data$predictions$designation %in% top_geno$designation)),]
         # rm(tmp, top_geno)
         ##########################################################################################
-        
+
         # some long process
         if(input$methodRgg == "piepho"){
           result <- try(cgiarPipeline::rggPiepho(
@@ -681,7 +679,7 @@ mod_rggApp_server <- function(id, data){
         return(result)
       }, seed=TRUE)
     })
-    
+
     observeEvent(input$runRgg, {
       req(data())
       req(input$methodRgg)
@@ -689,13 +687,13 @@ mod_rggApp_server <- function(id, data){
       req(input$trait2Rgg)
       req(input$yearsToUse)
       shinybusy::show_modal_spinner('fading-circle', text = 'Processing...')
-      
+
       ui_inputs <- shiny::reactiveValuesToList(input)
       data_obj  <- data()
-      
+
       my_rgg$invoke(ui_inputs, data_obj)
     })
-    
+
     output$outRgg <- output$outRgg2 <- renderPrint({
       result <- my_rgg$result()
       shinybusy::remove_modal_spinner()
@@ -705,7 +703,7 @@ mod_rggApp_server <- function(id, data){
         # save(result, file = "./R/outputs/resultRgg.RData")
         cat(paste("Realized genetic gain step with id:",as.POSIXct( result$status$analysisId[length(result$status$analysisId)], origin="1970-01-01", tz="GMT"),"saved."))
         updateTabsetPanel(session, "tabsMain", selected = "outputTabs")
-        
+
         # view metrics
         output$metricsRgg <-  DT::renderDT({
           metrics <- result$metrics
@@ -737,7 +735,7 @@ mod_rggApp_server <- function(id, data){
         output$reportRgg <- renderUI({
           HTML(markdown::markdownToHTML(knitr::knit(system.file("rmd","reportRgg.Rmd",package="bioflow"), quiet = TRUE), fragment.only=TRUE))
         })
-        
+
         output$downloadReportRgg <- downloadHandler(
           filename = function() {
             paste(paste0('rgg_dashboard_',gsub("-", "", as.integer(Sys.time()))), sep = '.', switch(
@@ -746,30 +744,30 @@ mod_rggApp_server <- function(id, data){
           },
           content = function(file) {
             shinybusy::show_modal_spinner(spin = "fading-circle", text = "Generating Report...")
-            
+
             src <- normalizePath(system.file("rmd","reportRgg.Rmd",package="bioflow"))
             src2 <- normalizePath('data/resultRgg.RData')
-            
+
             # temporarily switch to the temp dir, in case you do not have write
             # permission to the current working directory
             owd <- setwd(tempdir())
             on.exit(setwd(owd))
-            
+
             file.copy(src, 'report.Rmd', overwrite = TRUE)
             file.copy(src2, 'resultRgg.RData', overwrite = TRUE)
-            
+
             out <- rmarkdown::render('report.Rmd', params = list(toDownload=TRUE),switch(
               "HTML",
               HTML = rmdformats::robobook(toc_depth = 4)
               # HTML = rmarkdown::html_document()
             ))
-            
+
             # wait for it to land on disk (safety‐net)
             wait.time <- 0
             while (!file.exists(out) && wait.time < 60) {
               Sys.sleep(1); wait.time <- wait.time + 1
             }
-            
+
             file.rename(out, file)
             shinybusy::remove_modal_spinner()
           }
@@ -782,8 +780,8 @@ mod_rggApp_server <- function(id, data){
       }
       hideAll$clearAll <- FALSE
     })
-    
-    
+
+
   })
 }
 
